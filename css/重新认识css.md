@@ -4,14 +4,16 @@
 + **margin**
 从一个最简单的**圣杯布局**开始 [起源](http://alistapart.com/article/holygrail)
 # **圣杯布局**
-## **HTML**
+### **HTML**
+
 		<header id="hd">Header</header>  	 
 		<div id="bd">  
 			<div id="main">main</div>
 			<div id="aside">aside</div>
 		</div>
-		<footer>footer</footer>  
-## **CSS**
+		<footer>footer</footer>  </pre>
+### **CSS**
+
 		#hd {
 			padding-left: 210px;
 		}
@@ -29,11 +31,11 @@
 		footer {
 			background: #eee;
 		}
-
+	</pre>
 效果图[demo](http://codepen.io/wohaiwo/pen/RPOXgW)
 
 # **双飞翼布局** 
-## **HTML**
+### **HTML**
 DOM结构中主次内容分布合理，里面的内容显示就用css来解决
 
 		<header id="hd">Header</header>  	 
@@ -43,7 +45,7 @@ DOM结构中主次内容分布合理，里面的内容显示就用css来解决
 		<div id="aside-1"aside-1</div>
 		<div id="aside-2">aside-2</div>
 		<footer>footer</footer>  
-## **CSS**
+### **CSS**
 		#hd {
 			width: 100%;
 		}
