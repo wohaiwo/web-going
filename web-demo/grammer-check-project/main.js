@@ -1,3 +1,8 @@
+/**
+ * @author  zhanhang
+ * @time 2016/12/20 14:22
+ * @description  grammer-check的DOM
+ */
 
 function toArr(el) {
 	return Array.prototype.slice.call(el);
@@ -47,6 +52,18 @@ for(var i = 0, len = textInput.length; i < len; i++) {
 	})(i);
 }
 
+// 用户点击 'create initial error pattern' 按钮时， 出现后面的item-box模块
+var exampleSentence = document.querySelector('.example-sentences');
+exampleSentence.addEventListener('click', function(e) {
+	if(e.target.classList.contains('btn')) {
+		toArr(document.querySelectorAll('.item-box')).forEach(function(item) {
+			console.log(item);
+			if(item.classList.contains('is-show')) {
+				item.classList.remove('is-show');
+			}
+		});
+	}
+}, false);
 
 /**
 * [ Error Pattern 模板加载函数]
@@ -238,26 +255,58 @@ addWrongLine.addEventListener('click', function() {
 }, false);
 addCorrentLine.addEventListener('click', function() {
 	$('.sentence-box').append(correntSentence);
-}, false);
+}, false);   
 
 //文本词性分析调用
-function analyzeText(textInput){
-	var text = textInput; //页面传参
+function analyzeText(textInput, el){
 	$.ajax({
 	    type: "POST",
-	    url: "<%=request.getContextPath()%>/analyze/analyzeText",
+	    url: "http://192.168.1.115:18080/LyGrammerCheck/analyze/analyzeText",
 	    async: false, //是否异步
-	    data:{text:text},
+	    data:{text: textInput},
 	    success: function (data) {
 	       //返回页面组装
-	       return data.code;
+	       if(data.code == "success"){
+		    	var tmp = document.querySelector("#tmp-1").innerHTML;
+				var doTtmp = doT.template(tmp);
+				el.nextElementSibling.innerHTML = doTtmp(handleDate(data));		// 处理接收过来的数据
+	    	} else {
+	    		alert("失败");
+	    	}
 	    },
 	    error: function () {
-	        alert(data.code);
+	        alert(data);
 	    }
 	});
 	return false;
 }
+
+
+/**
+ * [// 处理接收过来的数据]
+ * @param  {[oobject]} data [词法分析接收到的数据]
+ * @return {array}      [返回处理好的数据]
+ */
+function handleDate(data) {
+	var dataObj = [];
+	for(var i = 0, len = data.length; i < len; i++) {
+		var dataItemArr = [],
+			dataToken = ['Token'],
+			dataLemma = ['Lemma'],
+			dataPos = ['Part-of-Speech'],
+			dataChunk = ['chunk'];
+		for(var j = 0; j < data[i].wordList.length; j++) {
+			dataToken.push(data[i].wordList[j].word);
+			dataLemma.push(data[i].wordList[j].lemma);
+			dataPos.push(data[i].wordList[j].pos);
+			dataChunk.push(data[i].wordList[j].chunk);
+		}
+		dataItemArr.push(dataToken, dataLemma, dataPos, dataChunk);
+		dataObj.push(dataItemArr);
+	}
+	return dataObj;
+}
+
 
 /* 删除添加的add-item */
 var sentenceBox = document.querySelector('.sentence-box');
@@ -268,18 +317,22 @@ sentenceBox.addEventListener('click', function(e) {
 	} else if(e.target.classList.contains('show-tip')) {
 		// 替换文本
 		var newStr = '<a class="add-item update-analysis">Update analysis</a><a class="add-item hide-analysis">Hide analysis</a>';
-		var textInput = e.target.closest('p').querySelector('input').value;
-		e.target.closest('p').lastElementChild.innerHTML = newStr;
-		// analyzeText(textInput);         // 调用文本词性
+		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
+		var textInput = parentNode.querySelector('input').value;
+		parentNode.lastElementChild.innerHTML = newStr;
+		analyzeText(textInput, parentNode);         // 调用文本词性
 	} else if(e.target.classList.contains('update-analysis')) {
 		// 更新词性分析框
-		var textInput = e.target.closest('p').querySelector('input').value;
-		// analyzeText(textInput);         // 更新文本词性
+		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
+		var textInput = parentNode.querySelector('input').value;
+		analyzeText(textInput, parentNode);         // 更新文本词性
 	} else if(e.target.classList.contains('hide-analysis')) {
 		// 隐藏词性分析框
-		console.log(e.target.closest('p').lastElementChild);
 		var oldStr = '<a class="add-item show-analysis show-tip">Show analysis</a>';
-		e.target.closest('p').lastElementChild.innerHTML = oldStr;
+		// 清除词法分析框
+		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
+		parentNode.nextElementSibling.innerHTML = '';
+		parentNode.lastElementChild.innerHTML = oldStr;
 	} else {
 		return false;
 	}
@@ -361,7 +414,11 @@ confirmBtn.addEventListener('click', function() {
                type: 'POST',  
                data: {"param":JSON.stringify(ruleParameter)},
                dataType: 'json', 
-               success: function (result) { alert(result.code); }
+               success: function (result) { 
+               		alert(result.code);
+               		var resulteXML = document.querySelector('.resulte-xml');
+               		resulteXML.innerHTML = result.code;			// 这里插入文档
+               }
            }; 
 		$.ajax(option);  
    }

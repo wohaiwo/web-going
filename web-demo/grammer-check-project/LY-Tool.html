@@ -10,8 +10,8 @@
   	<meta http-equiv="description" content="This is my page">
   	<link rel="stylesheet" href="marx.css">
   	<link rel="stylesheet" href="main.css">
-  	<script src="${rc}/js/jquery-1.8.0.js"></script> 
-  	<script src="${rc}/js/jquery-1.8.0.min.js"></script>
+  	<!-- <script src="${rc}/js/jquery-1.8.0.js"></script>  -->
+  	<!-- <script src="${rc}/js/jquery-1.8.0.min.js"></script> -->
 	<script src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js"></script>
 </head>
 <body>
@@ -39,10 +39,12 @@
 							<label class="item-line"><span>wrong sentence:</span><input class="text-input" type="text" data-exampletype="w" placeholder="Sorry for my bed English"></label>
 							<span><a class="add-item show-analysis">Show analysis</a></span>
 						</p>
+						<div class="analysis-box"></div>
 						<p>
 							<label class="item-line"><span>correct sentence:</span><input class="text-input" type="text" data-exampletype="c" placeholder="Sorry for my bad English"></label>
 							<span><a class="add-item show-analysis">Show analysis</a></span>
 						</p>
+						<div class="analysis-box"></div>
 					</div>
 					<p class="description-line padding-left">     
 						<a class="add-item add-wrong">Add another wrong example</a>
@@ -55,7 +57,7 @@
 			</div>
 			
 			<!-- 设置错误模式 -->
-			<div class="item-box error-pattern">
+			<div class="item-box is-show error-pattern">
 				<h3>Set the Error Pattern</h3>
 				<div>
 					<p>Use this to specify the error pattern, i.e. the sequence of words that - if found in a text that is checked by LanguageTool - triggers an error message. Add a token to the pattern to add a word so your pattern gets longer and thus more specific.</p>
@@ -126,7 +128,7 @@
 			</div>
 
 			<!-- 设置规则详情 -->
-			<div class="item-box">
+			<div class="item-box is-show">
 				<h3>Set the Rule Details</h3>
 				<div class="item-content">
 					<p>
@@ -146,10 +148,34 @@
 					<button class="btn confirm-btn">Evaluate error pattern</button>
 				</div>
 			</div>
+			<div class="item-box resulte-xml"></div>
 		</div> <!-- end of div.main-content -->
 	</div> <!-- end of div.main -->
 	<script src="Sortable.min.js"></script>
-	<script src="ajax.js"></script>
+	<script src="doT.min.js"></script>
 	<script src="main.js"></script>
+	<script id="tmp-1" type="text/template">
+		<div class="sentenceAnalysis">
+			<p>
+				Use this analysis to see what part-of-speech tags get assigned to the words of your sentence.<br>
+				You might want to use these part-of-speech tags in your error pattern in the next step.
+			</p>
+			<div id="wrongSentenceEvaluation">
+		        {{~it :v:i }}
+			    <table>
+				    <tbody>
+						{{~v :itemList:j }}
+	            		<tr>
+							{{~itemList :dataList:k}}
+							<td>{{= dataList}}</td>
+							{{~}}
+	            		</tr>
+						{{~}}
+				    </tbody>
+			    </table>
+		        {{~}}
+			</div>
+		</div>
+	</script>
 </body>
 </html>
