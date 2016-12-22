@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>表单排序</title>
+	<style>
+		table.basicTab {
+		  border: 1px solid #e6e6e6;
+		  font-size: 16px;
+		  width: 100%;
+		  text-align: center;
+		  vertical-align: middle;
+		  border-collapse: collapse;
+		  color: #999999;
+		  margin-bottom: 40px;
+		}
+		table.basicTab thead {
+		  background: #cecece;
+		}
+		table.basicTab thead tr th {
+		  height: 50px;
+		  line-height: 50px;
+		  width: 110px;
+		  color: #fff;
+		  margin-left: 1px;
+		  font-weight: normal;
+		  border-right: 1px solid #fff;
+		  cursor: pointer;
+		}
+		table.basicTab thead #th1 {
+		  cursor: default;
+		}
+		table.basicTab thead .as,
+		table.basicTab thead .desc,
+		table.basicTab thead .sortIcon {
+		  position: relative;
+		}
+		table.basicTab thead .as:before,
+		table.basicTab thead .desc:before,
+		table.basicTab thead .sortIcon:before,
+		table.basicTab thead .sortIcon:after {
+		  position: absolute;
+		  left: 82%;
+		  content: " ";
+		  border: 1px solid red;
+		  border: 6px solid transparent;
+		}
+		table.basicTab thead .as:first-child:before,
+		table.basicTab thead .desc:first-child:before,
+		table.basicTab thead .sortIcon:first-child:before,
+		table.basicTab thead .sortIcon:first-child:after {
+		  left: 66%;
+		}
+		table.basicTab thead .as:nth-child(5):before,
+		table.basicTab thead .desc:nth-child(5):before,
+		table.basicTab thead .sortIcon:nth-child(5):before,
+		table.basicTab thead .sortIcon:nth-child(5):after {
+		  left: 85%;
+		}
+		table.basicTab thead .desc:before {
+		  border-top-color: #fff;
+		  top: 44%;
+		}
+		table.basicTab thead .as:before {
+		  border-bottom-color: #fff;
+		  top: 32%;
+		}
+		table.basicTab thead .sortIcon:before,
+		table.basicTab thead .sortIcon:after {
+		  border-bottom-color: #fff;
+		  top: 24%;
+		}
+		table.basicTab thead .sortIcon:after {
+		  transform: rotate(180deg);
+		  top: 52%;
+		}
+		table.basicTab tbody {
+		  background: #fafafa;
+		}
+		table.basicTab tbody tr.errorNum {
+		  color: #9dd8ef;
+		}
+		table.basicTab tbody tr:last-child td {
+		  border-bottom-width: 0;
+		}
+		table.basicTab tbody tr td {
+		  height: 60px;
+		  border: 1px solid #e6e6e6;
+		  border-width: 0 1px 1px 0;
+		}
+		table.basicTab tbody tr td:last-child {
+		  border-right-width: 0;
+		}
+		table.basicTab tbody tr .studentName a,
+		table.basicTab tbody tr .studentName a:link,
+		table.basicTab tbody tr .studentName a:visited,
+		table.basicTab tbody tr .studentName a:hover,
+		table.basicTab tbody tr .studentName a:active {
+		  display: inline-block;
+		  width: 142px;
+		  height: 60px;
+		  line-height: 60px;
+		  cursor: pointer;
+		  color: #ff7951;
+		}
+		table.basicTab tbody tr .studentName a:hover {
+		  text-decoration: underline;
+		}
+	</style>
+</head>
+<body>
+	<div class="scoreRank">
+	<div class="labelBar">- 学生阅读情况 -</div>
+	<table class="basicTab">
+		<thead>
+			<tr>
+				<th id="th0" class="as">序号</th>
+				<th id="th1">姓名</th>
+				<th id="th2" class="sortIcon">当前等级</th>
+				<th id="th3" class="sortIcon">阅读总量</th>
+				<th id="th4" class="sortIcon">总成绩(%)</th>
+				<th id="th5" class="sortIcon">阅读理解</th>
+				<th id="th6" class="sortIcon">词汇语法</th>
+				<th id="th7" class="sortIcon">听力训练</th>
+				<th id="th8" class="sortIcon">阅读字数</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td name="td0">1</td>
+				<td name="td1" class="studentName">32</td>
+				<td name="td2">83</td>
+				<td name="td3">14</td>
+				<td name="td4">55</td>
+				<td name="td5">36</td>
+				<td name="td6">17</td>
+				<td name="td7">28</td>
+				<td name="td8">39</td>
+			</tr>
+			<tr>
+				<td name="td0">2</td>
+				<td name="td1" class="studentName">243</td>
+				<td name="td2">33</td>
+				<td name="td3">40</td>
+				<td name="td4">65</td>
+				<td name="td5">66</td>
+				<td name="td6">77</td>
+				<td name="td7">88</td>
+				<td name="td8">99</td>
+			</tr>
+			<tr>
+				<td name="td0">3</td>
+				<td name="td1" class="studentName">222</td>
+				<td name="td2">3</td>
+				<td name="td3">44</td>
+				<td name="td4">55</td>
+				<td name="td5">66</td>
+				<td name="td6">7</td>
+				<td name="td7">88</td>
+				<td name="td8">99</td>
+			</tr>
+			<tr>
+				<td name="td0">4</td>
+				<td name="td1" class="studentName">0</td>
+				<td name="td2">3</td>
+				<td name="td3">44</td>
+				<td name="td4">5</td>
+				<td name="td5">66</td>
+				<td name="td6">37</td>
+				<td name="td7">28</td>
+				<td name="td8">99</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<script>
+	/**
+	 *  表单排序 @time 2016-12-22
+	 *  firefox -- Array.sort 原生方法不支持 中文Unicode排序问题
+	 *  可以通过转义直接Unicode的值来比较大小，进行排序
+	 */
+	Array.prototype.slice.call(document.querySelectorAll('th')).forEach(function(item) {
+		item.addEventListener('click', function(e) {
+			sortTable(e);
+		}, false);
+	});
+	// 表格排序算法
+	function sortTable(e) {
+			console.log(111);
+			// 姓名不排序
+			if(e.target.id == 'th1') {
+				return false;
+			}
+
+			// 升序
+			function sortNumberAs(a, b) {
+				return a - b;
+			}
+			// 降序
+			function sortNumberDesc(a, b) {
+				return b - a;
+			}
+
+			/**
+	         * [统一改变未点击表头的css样式]
+	         * @param {[Object]} [e] [鼠标当前点击事件]
+	         */
+			function changeThStyle(e) {
+				for(var i = 0; i < thLen; i++) {
+					if(thNum[i].id != 'th1') {
+						thNum[i].className = 'sortIcon';						
+					}
+				}
+			}
+
+			var tdArr = [];  // 存放每一列的表单数据
+			var tdNum = [];  // 存放每一列的Html元素
+			var thNum = [];  // 存放表头中的element元素
+			var tdLen = document.querySelectorAll('.basicTab tbody tr:first-child > td').length;
+			var thElement = document.querySelectorAll('.basicTab thead tr > th');
+			var thLen = thElement.length;
+			for(var i = 0; i < thLen; i++) {
+				thNum.push(thElement[i]);
+			}
+
+			for(var i = 0; i < tdLen; i++) {
+				tdArr[i] = []; 
+				tdNum[i] = document.getElementsByName('td' + i);
+				for(var j = 0; j < tdNum[i].length; j++) {
+					tdArr[i].push((tdNum[i][j].innerHTML)); 
+				}
+			}
+			
+			// 判断用户点击的是哪一列
+			var tds = document.getElementsByName('td' + e.target.id.substr(2, 1));
+
+			// 存放当前鼠标点击表头所在列的数据
+			var columnArr = [];
+			for(var i = 0; i < tds.length; i++) {
+				columnArr.push(tds[i].innerHTML);
+			}
+
+			var orginArr = columnArr.slice();
+			
+			if(e.target.className == 'sortIcon') {
+				changeThStyle(e);
+				columnArr.sort(sortNumberDesc);
+				e.target.className = 'desc';
+			} else {
+				if(e.target.className == 'as') {
+					columnArr.sort(sortNumberDesc);
+					e.target.className = 'desc';
+				} else {
+					columnArr.sort(sortNumberAs);
+					e.target.className = 'as';
+				}
+			}
+
+			for(var i = 0; i < columnArr.length; i++) {
+				for(var j = 0; j < orginArr.length; j++) {
+					if(orginArr[j] == columnArr[i]) {
+						for(var k = 0; k < tdLen; k++)
+						document.getElementsByName('td' + k)[i].innerHTML = tdArr[k][j];
+						orginArr[j] = null;
+						break;
+					}
+				}
+			}
+	};
+</script>
+</body>
+</html>

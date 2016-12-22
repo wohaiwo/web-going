@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>自定义和拖拽事件的实现</title>
+	<style>
+	.draggable {
+		width: 100px;
+		height: 100px;
+		background: red;
+		position: relative;
+	}
+	</style>
+	<script>
+	EventUtil = {
+		addHeadler: function(element, type, handler) {
+			if(element.addEventListener) {
+				element.addEventListener(type, handler, false);
+			} else if(element.attachEvent) {
+				element.attachEvent('on' + type, handler);
+			} else {
+				element['on' + type] = handler;
+			}
+		},
+		removeHandler: function(element, type, handler) {
+			if(element.removeEventListener) {
+				element.removeEventListener(type, handler, false);
+			} else if (element.detachEvent) {
+				element.detachEvent('on' + type, handler);
+			} else {
+				element['on' + type] = null;
+			}
+		},
+		getEvent: function(event) {
+			return event || window.event;
+		},
+		getTarget: function(event) {
+			return event.target || event.srcElement;
+		},
+		preventDefault: function(event) {
+			if(event.preventDefault) {
+				event.preventDefault();
+			} else {
+				event.returnValue = false;
+			}
+		},
+		stopPropagation: function(event) {
+			if(event.stopPropagation) {
+				event.stopPropagation();
+			} else {
+				event.cancelBubble = true;
+			}
+		},
+		// mouseover和mouseout事件 event对象的relatedTarget属性
+		// 触发mouseout事件 IE中的toElement保存相关属性  触发mouseover事件 IE中的fromElement保存相关属性
+		// IE8以及之前的版本不支持 
+		getRelatedTarget: function(event) {
+			if(event.relatedTarget) {
+				return event.relatedTarget;
+			} else if (event.toElement) {
+				return event.toElement;
+			} else if (event.formElement) {
+				return event.formElement;
+			} else {
+				return null;
+			}
+		},
+		// 鼠标按钮
+		getButton: function(event) {
+			if(document.implementation.hasFeature('MouseEvents', '2.0')) {
+				return event.button;
+			} else {
+				switch(event.button) {
+					case 0: 
+					case 1:
+					case 3:
+					case 5:
+					case 7:
+						return 0;
+					case 2:
+					case 6: 
+						return 2;
+					case 4: 
+						return 1;
+				}
+			}
+		},
+		// 鼠标滚轮事件
+		getWheelDelta: function(event) {
+			if(event.wheelDelta) {
+				return (client.engine.opera && client.engine.opera < 9.5 ? -event.wheelDelta : event.wheelDelta);
+			} else {
+				return -event.detail * 40;
+			}
+		},
+		// 键盘中字符编码
+		getCharCode: function(event) {
+			if(typeof event.charCode == 'number') {
+				return event.charCode;
+			} else {
+				return event.keyCode;
+			}
+		}
+	};
+	</script>
+</head>
+<body>
+	<div>
+		<p>你好 我来了  请闭眼.</p>
+	</div>
+	<div class="draggable">111</div>
+	<script>
+	// 拖动功能
+	var drogDrop = function() {
+		var dragging = null,
+			diffX = 0,
+			diffY = 0;
+		function handlerEvent(event) {
+			// 获取事件和目标
+			event = EventUtil.getEvent(event);
+			var target = EventUtil.getTarget(event);
+
+			// 确定事件类型
+			switch(event.type) {
+				case 'mousedown': 
+						if(target.className.indexOf('draggable') >　-1) {
+							dragging = target;
+							diffX = event.clientX - target.offsetLeft;
+							diffY = event.clientY - target.offsetTop;
+						}
+						break;
+				case 'mousemove': 
+						if(dragging != null) {
+
+							// 指定位置
+							dragging.style.left = (event.clientX - diffX) + 'px';
+							dragging.style.top = (event.clientY - diffY) + 'px';
+						}
+						break;
+				case 'mouseup': 
+						dragging = null;
+						break;
+			}
+		}
+		// 公共接口
+		return {
+			enable: function() {
+				EventUtil.addHeadler(document, 'mousedown', handlerEvent);
+				EventUtil.addHeadler(document, 'mousemove', handlerEvent);
+				EventUtil.addHeadler(document, 'mouseup', handlerEvent);
+			},
+			disable: function() {
+				EventUtil.removeHandler(document, 'mousedown', handlerEvent);
+				EventUtil.removeHandler(document, 'mousemove', handlerEvent);
+				EventUtil.removeHandler(document, 'mouseup', handlerEvent);
+			}
+
+		};
+	}();
+	drogDrop.enable();
+	</script>
+
+	<script>
+	// 自定义事件
+	function EventTarget() {
+		this.handlers = {};
+	}
+	EventTarget.prototype = {
+		constructor: EventTarget,
+		addHeadler: function(type, handler) {
+			if(typeof this.handlers[type] == "undefined") {
+				this.handlers[type] = [];
+			}
+			this.handlers[type].push(handler);
+		},
+		fire: function(event) {
+			if(!event.target) {
+				event.target = this;
+			}
+			if(this.handlers[event.type] instanceof Array) {
+				var handlers = this.handlers[event.type];
+				for(var i = 0, len = handlers.length; i < len; i++) {
+					handlers[i](event);
+				}
+			}
+		},
+		removeHandler: function(type, handler) {
+			if(this.handlers[type] instanceof Array) {
+				var handlers = this.handlers[type];
+				for(var i = 0, len = handlers.length; i < len; i++) {
+					if(handlers[i] == handler) {
+						break;
+					}
+				}
+				handlers.splice(i, 1);
+			}
+		}
+	};
+
+	function handlerMessage(event) {
+		alert("Message received: " + event.message);
+	}
+	// 创建一个新对象
+	var target = new EventTarget();
+
+	// 添加一个事件处理程序
+	target.addHeadler("message", handlerMessage);
+
+	// 触发事件
+	target.fire({type: "message", message: "Hello world!"});
+
+	// 删除事件处理程序
+	target.removeHandler("message", handlerMessage);
+
+	// 再次， 应没有处理程序
+	target.fire({type: "message", message: "11111"});
+	</script>
+</body>
+</html>
