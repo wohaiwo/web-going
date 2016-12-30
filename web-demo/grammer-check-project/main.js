@@ -1,8 +1,4 @@
-/**
- * @author  zhanhang
- * @time 2016/12/20 14:22
- * @description  grammer-check的DOM
- */
+
 
 function toArr(el) {
 	return Array.prototype.slice.call(el);
@@ -19,7 +15,7 @@ var wordLine = '<p>' +
 			    '</p>';
 
 var minorIndex = 0;			// input-radio 次版本号
-var majorIndex = 1;			// input-radio 主版本号
+var majorIndex = 0;			// input-radio 主版本号
 
 
 /* 监听用户是否input-text 来进行显示上的交互 */
@@ -52,18 +48,180 @@ for(var i = 0, len = textInput.length; i < len; i++) {
 	})(i);
 }
 
-// 用户点击 'create initial error pattern' 按钮时， 出现后面的item-box模块
+//用户点击 'create initial error pattern' 按钮时， 出现后面的item-box模块
 var exampleSentence = document.querySelector('.example-sentences');
 exampleSentence.addEventListener('click', function(e) {
 	if(e.target.classList.contains('btn')) {
 		toArr(document.querySelectorAll('.item-box')).forEach(function(item) {
-			console.log(item);
 			if(item.classList.contains('is-show')) {
 				item.classList.remove('is-show');
 			}
 		});
+
+		// 调用第一次加载token-word的显示的word接口
+		/*
+		var option = {
+           url: '../rule/tokenWordList',   
+           type: 'POST',  
+           async: true, //是否异步
+           data: getTokenWordList(),
+           dataType: 'json', 
+           success: function (data) {
+        	    document.querySelector('.error-pattern .item-content > .sort-table').innerHTML = ' ';
+           		if(data.tokenWordList.length >= 1) {
+					$('.error-pattern .item-content > .sort-table').append(addSortList(data.tokenWordList));
+				} else {
+					$('.error-pattern .item-content > .sort-table').append(addSortList(['']));
+				}
+           }
+        }; 
+		$.ajax(option);
+		*/
+
+		/*
+		// 规则大类接口
+		var option = {
+        	url: '../rule/ruleClassList',
+        	type: 'POST',
+        	async: true,
+        	data: {},
+        	dataType: 'json',
+        	success: function (data) {
+        		// 初始化大类-selectOption
+        		document.querySelector('.big-class').innerHTML = ' ';
+           		handleMainClassData(1, data.mainClassList);
+			}
+        }; 
+		$.ajax(option);  
+		*/
+	
+	// 本地测试环境
+	// 每次重置 set the error pattern 里面的内容
+	document.querySelector('.error-pattern .item-content > .sort-table').innerHTML = ' ';
+	var data = ['zhan', 'hang'];
+	if(data.length >= 1) {
+		$('.error-pattern .item-content > .sort-table').append(addSortList(data));
+	} else {
+		$('.error-pattern .item-content > .sort-table').append(addSortList(['']));
+	}
 	}
 }, false);
+
+/**
+ * 
+ * @param index 0 表示 小类 1 表示 大类
+ * @param data ajax回调的数据
+ */
+function handleMainClassData(index, data) {
+	var optionLine = ''
+	var smallClassBox = document.querySelector('.small-class');
+		if(smallClassBox) {
+			smallClassBox.parentNode.removeChild(smallClassBox);
+		}
+	data.forEach(function(item){
+		var bigClassOptionLine = '<option data-optionid='+ item.id +'>' + item.name + '</option>';
+		optionLine += bigClassOptionLine;
+	});
+	
+	if(index === 0) {
+		var selectBox = '<select class="small-class">'+ optionLine +'</select>';
+		$('.big-class').after(selectBox);
+	} else {
+		$('.big-class').append(optionLine);
+	}
+}
+
+/**	
+ * 获取大类，小类中optionId
+ * @param index (0 => 小类, 1=> 大类)
+ * @return 返回optionValue
+ */
+function getOptionName(index) {
+	if(index === 0) {
+		var selectBox = document.querySelector('.small-class');
+		return selectBox.value;
+	} else {
+		var selectBox = document.querySelector('.big-class');
+		return selectBox.value;
+	}
+}
+
+// 点击大类select来动态选择小类数据
+document.querySelector('.big-class').addEventListener('click', function(el) {
+	// 规则小类接口
+	var option = {
+        	url: '../rule/ruleSmallList',
+        	type: 'POST',
+        	async: true,
+        	data: {mainClassId: el.target.options[el.target.selectedIndex].dataset.optionid},
+        	dataType: 'json',
+        	success: function (data) {
+        		handleMainClassData(0, data.smallClassList);
+			}
+        }; 
+		$.ajax(option);
+}, false);
+
+//循环遍历 Set Example Sentences 中 wrong-correct的错误正确的例句
+function getTokenWordList() {
+
+	//规则例句
+	var ruleExample = {
+		wrongSentences: null,			// wrong 错误例句
+		correctSentences: null			// corrected 纠正例句
+	};
+	var dataSentenceBox = document.querySelectorAll('.sentence-box input');		// 需要重新加载input元素
+	toArr(dataSentenceBox).forEach(function(el, index) {
+		// 只需要传入前二个sentence例句
+		(index == 0) && (ruleExample.wrongSentences = el.value);
+		(index == 1) && (ruleExample.correctSentences = el.value);
+	});
+	return ruleExample;
+}
+
+/**
+ * 动态显示set the error pattern 中 sort-list的选项
+ * @param {[array]} inputArr [传入的一个有input-value的值组成的数组]
+ */
+function addSortList(inputArr) {
+	// 初始化版本号
+	minorIndex = 0;			// input-radio 次版本号
+	majorIndex = 0;			// input-radio 主版本号
+	var lineArr = '';
+	// 单个sort-list的html模板
+	function inputList(item) {
+		majorIndex++;
+		var maxNodeType = 'token' + '-' + majorIndex;
+		var patternLine = '<li class="sort-list">' +
+						'<p><span class="drag-icon">&#8597;&nbsp;Token #'+ majorIndex  +'</span><a class="delete">&#10006;</a></p>' +
+						'<p>' +
+							'<label><input type="radio" data-select="W" name="'+ maxNodeType +'" checked>Word</label>' +
+							'<label><input type="radio" data-select="P" name="'+ maxNodeType +'">Part-of-speech</label>' +
+							'<label><input type="radio" data-select="WP" name="'+ maxNodeType +'">Word + Part-of-speech</label>' +
+							'<label><input type="radio" data-select="All" name="'+ maxNodeType +'">Any word</label>' +
+						'</p>' +
+						'<div class="word-box">' + 
+							'<p>' +
+								'<label class="item-line">Word:&nbsp;&nbsp;<input type="text" placeholder="word" value="' + item +'"></label>' +
+								'<label><input type="checkbox" value="wordRegExp">RgeExp</label>' +
+								'<label><input type="checkbox" value="wordBaseForm">Base form</label>' +
+								'<label><input type="checkbox" value="wordNegate">Negate</label>' +
+						    '</p>' +
+						'</div>' +
+						'<ul class="sort-table"></ul>' +
+						'<p>' +
+							'<a class="add-item add-exception">Add exception</a>' +
+							'<a class="add-item show-box">Edit Advanced Attributes (<span>0</span>)</a>' +
+						'</p>' +
+					'</li>';
+		return patternLine;
+	}
+
+	inputArr.forEach(function(el) {
+		lineArr += inputList(el);
+	});
+	return lineArr;
+}
 
 /**
 * [ Error Pattern 模板加载函数]
@@ -180,19 +338,6 @@ for(var i = 0; i < sortTableBox.length; i++) {
 	})(i);
 }
 
-/* addanced-box 弹出层 动态加载 */
-var attributesLine = '<li  class="sort-list">' +
-						'<select>' +
-							'<option value="min">min</option>' +
-							'<option value="max">max</option>' +
-							'<option value="skip">skip</option>' +
-							'<option value="chunk">chunk</option>' +
-							'<option value="spacebefore">spacebefore</option>' +
-						'</select>' +
-						'<span>&nbsp;=&nbsp;</span>' +
-						'<input type="text" required>' +
-						'<a class="delete">&#10006;</a>' + 
-					'</li>';
 
 // 循环遍历advance弹出框数据，并插入到DOM中去
 function getSelectOplArr() {
@@ -218,14 +363,25 @@ function getSelectOplArr() {
 	selectAdvancedBox.dataset.advancedarr = advancedArrStr;
 }
 
+/* addanced-box 弹出层 动态加载 */
+var attributesLine = '<li  class="sort-list">' +
+						'<select>' +
+							'<option value="min">min</option>' +
+							'<option value="max">max</option>' +
+							'<option value="skip">skip</option>' +
+							'<option value="chunk">chunk</option>' +
+							'<option value="spacebefore">spacebefore</option>' +
+						'</select>' +
+						'<span>&nbsp;=&nbsp;</span>' +
+						'<input type="text" required>' +
+						'<a class="delete">&#10006;</a>' + 
+					'</li>';
+
+
 /* 事件委托 advanced 弹出框 */
 advancedBox.addEventListener('click', function(e) {
 	e.stopPropagation();
 	switch(e.target.className) {
-		case 'close-box':
-			// 关闭advanced-box 弹出层
-			advancedBox.style.display = 'none';
-			break;
 		case 'add-attribute':
 			// 添加attri-item选项
 			$('.advanced-box .sort-table').append(attributesLine);
@@ -233,6 +389,10 @@ advancedBox.addEventListener('click', function(e) {
 		case 'advanced-confirm':
 			// 点击advance弹出层确认按钮，绑定数据到DOM中去
   			getSelectOplArr();
+  			advancedBox.style.display = 'none';
+  			break;
+		case 'close-box':
+			// 关闭advanced-box 弹出层
 			advancedBox.style.display = 'none';
 			break;
 		case 'mask-box':
@@ -244,24 +404,25 @@ advancedBox.addEventListener('click', function(e) {
 	
 
 /* 添加一个add-item条目 */
-var wrongSentence = '<p class="wrong-sentence sort-list"><label class="item-line"><span>wrong sentence:</span><input type="text" data-exampletype="w" placeholder="Sorry for my bed English"></label><a class="delete">&#10006;</a></p>';
-var correntSentence = '<p class="correct-sentence sort-list"><label class="item-line"><span>correct sentence:</span><input type="text" data-exampletype="c" placeholder="Sorry for my dad English"></label><a class="delete">&#10006;</a></p>';
 
-var addWrongLine = document.querySelector('.add-wrong');
-var addCorrentLine = document.querySelector('.add-corrent');
 /* 添加add-item */
+var addWrongLine = document.querySelector('.add-wrong');
 addWrongLine.addEventListener('click', function() {
+	var wrongSentence = '<p class="wrong-sentence sort-list"><label class="item-line"><span>wrong sentence:</span><input type="text" data-exampletype="w" placeholder="Sorry for my bed English"></label><a class="delete">&#10006;</a></p>';
 	$('.sentence-box').append(wrongSentence);
 }, false);
+
+var addCorrentLine = document.querySelector('.add-corrent');
 addCorrentLine.addEventListener('click', function() {
+	var correntSentence = '<p class="correct-sentence sort-list"><label class="item-line"><span>correct sentence:</span><input type="text" data-exampletype="c" placeholder="Sorry for my dad English"></label><a class="delete">&#10006;</a></p>';
 	$('.sentence-box').append(correntSentence);
-}, false);   
+}, false);
 
 //文本词性分析调用
 function analyzeText(textInput, el){
 	$.ajax({
 	    type: "POST",
-	    url: "http://192.168.1.115:18080/LyGrammerCheck/analyze/analyzeText",
+	    url: "../analyze/analyzeText",
 	    async: false, //是否异步
 	    data:{text: textInput},
 	    success: function (data) {
@@ -269,13 +430,13 @@ function analyzeText(textInput, el){
 	       if(data.code == "success"){
 		    	var tmp = document.querySelector("#tmp-1").innerHTML;
 				var doTtmp = doT.template(tmp);
-				el.nextElementSibling.innerHTML = doTtmp(handleDate(data));		// 处理接收过来的数据
+				el.nextElementSibling.innerHTML = doTtmp(handleDate(data.sentenceList));		// 处理接收过来的数据
 	    	} else {
 	    		alert("失败");
 	    	}
 	    },
 	    error: function () {
-	        alert(data);
+	        alert(data.code);
 	    }
 	});
 	return false;
@@ -283,7 +444,7 @@ function analyzeText(textInput, el){
 
 
 /**
- * [// 处理接收过来的数据]
+ * [处理接收过来的数据]
  * @param  {[oobject]} data [词法分析接收到的数据]
  * @return {array}      [返回处理好的数据]
  */
@@ -316,23 +477,23 @@ sentenceBox.addEventListener('click', function(e) {
 		e.currentTarget.removeChild(e.target.closest('p'));
 	} else if(e.target.classList.contains('show-tip')) {
 		// 替换文本
-		var newStr = '<a class="add-item update-analysis">Update analysis</a><a class="add-item hide-analysis">Hide analysis</a>';
-		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
-		var textInput = parentNode.querySelector('input').value;
+		var newStr = '<a class="add-item update-analysis">Update analysis(SF)</a><a class="add-item hide-analysis">Hide analysis</a>';
+		var textInput = e.target.closest('p').querySelector('input').value;
+		var parentNode = e.target.closest('p');			// 距离当前标签最近的P标签
 		parentNode.lastElementChild.innerHTML = newStr;
+		
 		analyzeText(textInput, parentNode);         // 调用文本词性
 	} else if(e.target.classList.contains('update-analysis')) {
 		// 更新词性分析框
-		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
+		var parentNode = e.target.closest('p');
 		var textInput = parentNode.querySelector('input').value;
 		analyzeText(textInput, parentNode);         // 更新文本词性
 	} else if(e.target.classList.contains('hide-analysis')) {
 		// 隐藏词性分析框
 		var oldStr = '<a class="add-item show-analysis show-tip">Show analysis</a>';
 		// 清除词法分析框
-		var parentNode = e.target.closest('p'); 				// 当前元素最近的p标签
-		parentNode.nextElementSibling.innerHTML = '';
-		parentNode.lastElementChild.innerHTML = oldStr;
+		e.target.closest('p').nextElementSibling.innerHTML = '';
+		e.target.closest('p').lastElementChild.innerHTML = oldStr;
 	} else {
 		return false;
 	}
@@ -340,12 +501,11 @@ sentenceBox.addEventListener('click', function(e) {
 
 
 /* 添加pattern about toekn && error marker */
-var maxNodeType = 'token' + majorIndex;
 var addTokenPattern = document.querySelector('.add-token-pattern');
 var addErrorPattern = document.querySelector('.add-error-pattern');
 var sortBox = document.getElementById('sort-box');
 
-// 拖拽事件
+// 拖拽事件 调用Sorttable.js框件
 Sortable.create(sortBox, {
   animation: 150
 });
@@ -354,10 +514,11 @@ addTokenPattern.addEventListener('click', function() {
 	$('.error-pattern .item-content > .sort-table').append(addPattern(true));
 }, false);
 
-var markerStar = '<li class="sort-list marker-start"><span class="drag-icon">&#8597;&nbsp;Marker start</span><a class="delete marker-tab">&#10006;</a></li>';
-var markerEnd = '<li class="sort-list marker-end"><span class="drag-icon">&#8597;&nbsp;Marker end</span><a class="delete marker-tab">&#10006;</a></li>';
 /* 添加marker start 和 marker end 标记 */
 addErrorPattern.addEventListener('click', function(e) {
+	var markerStar = '<li class="sort-list marker-start"><span class="drag-icon">&#8597;&nbsp;Marker start</span><a class="delete marker-tab">&#10006;</a></li>';
+	var markerEnd = '<li class="sort-list marker-end"><span class="drag-icon">&#8597;&nbsp;Marker end</span><a class="delete marker-tab">&#10006;</a></li>';
+
 	$('#sort-box').prepend(markerStar).append(markerEnd);
 	addErrorPattern.style.display = 'none';
 }, false);
@@ -383,11 +544,15 @@ confirmBtn.addEventListener('click', function() {
 		message = document.querySelector('.message').value;
 		shortMessage = document.querySelector('.short-message').value || null;
 		url = document.querySelector('.url').value || null;
+		mainClassName = getOptionName(1);
+		smallClassName = getOptionName(0);
 		return {
 			ruleName: ruleName,
 			message: message,
 			shortMessage: shortMessage,
-			url: url
+			url: url,
+			mainClassName: mainClassName,
+			smallClassName: smallClassName
 		}
 	}
 	var ruleDetails = getRuleDetails();
@@ -405,19 +570,21 @@ confirmBtn.addEventListener('click', function() {
            caseSensitive: isCaseSensitive(),				//是否区分大小写
            ruleExampleList: getDataSentenceBox(),		//规则例句数组List
            ruleTokenList: errorPattern.ruleTokenList,		//Token规则数组List
+           mainClass: ruleDetails.mainClassName,
+           smallClass: ruleDetails.smallClassName,
            markerStart: errorPattern.markerStart,
            markerEnd: errorPattern.markerEnd
        };
        console.log(ruleParameter);
 		var option = {
-               url: '<%=request.getContextPath()%>/rule/checkXml',  
+               url: '../rule/checkXml',  
                type: 'POST',  
                data: {"param":JSON.stringify(ruleParameter)},
                dataType: 'json', 
-               success: function (result) { 
-               		alert(result.code);
-               		var resulteXML = document.querySelector('.resulte-xml');
-               		resulteXML.innerHTML = result.code;			// 这里插入文档
+               success: function (data) {
+            	    document.querySelector('.resulte-xml').style.display="block";
+               		var resulteXML = document.querySelector('.resulte-xml > textarea');
+               		resulteXML.innerHTML = data.result;			// 这里插入文档
                }
            }; 
 		$.ajax(option);  
@@ -425,7 +592,10 @@ confirmBtn.addEventListener('click', function() {
 
 }, false);
 
-// 循环遍历 Set Example Sentences 的数据
+/**
+ * [循环遍历 Set Example Sentences 的数据]
+ * @return {[type]} [获取example sentence中的例句数据]
+ */
 function getDataSentenceBox() {
 	var ruleExampleList = []; 		// 规则例句数组List(至少包含两个，一个错误例句，一个纠正例句)，可添加更多
 	var dataSentenceBox = document.querySelectorAll('.sentence-box input');		// 需要重新加载input元素
@@ -446,7 +616,10 @@ function getDataSentenceBox() {
 	return ruleExampleList;
 }
 
-// 循环遍历 Set the Error Pattern 的数据
+/**
+ * [循环遍历 Set the Error Pattern 的数据]
+ * @return {[obj]} [返回ajax接口需要的参数]
+ */
 function getErrorPattern() {
 	var sortBoxList = document.querySelectorAll('#sort-box > li.sort-list');
 	var ruleTokenList = [],
