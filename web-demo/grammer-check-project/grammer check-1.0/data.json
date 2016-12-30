@@ -1,0 +1,22 @@
+[
+	{
+		"sentence":"This is Wrong sentence.",
+		"wordList": [
+			{"chunk":"", "lemma":"this", "pos":"DT", "word":"This"},
+			{"chunk":"", "lemma":"be", "pos":"VBZ", "word":"is"},
+			{"chunk":"", "lemma":"wrong", "pos":"JJ", "word":"Wrong"},
+			{"chunk":"", "lemma":"sentence", "pos":"NN", "word":"sentence"},
+			{"chunk":"", "lemma":".", "pos":".", "word":"."}
+		]
+	},
+	{
+		"sentence":"This is correct sentence.",
+		"wordList": [
+			{"chunk":"","lemma":"this","pos":"DT","word":"This"},  
+			{"chunk":"","lemma":"be","pos":"VBZ","word":"is"},
+			{"chunk":"","lemma":"correct","pos":"JJ","word":"correct"},
+			{"chunk":"","lemma":"sentence","pos":"NN","word":"sentence"},
+			{"chunk":"","lemma":".","pos":".","word":"."}
+		]
+	}
+]

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Create a new LanguageTool rule</title>
+  	<meta http-equiv="pragma" content="no-cache">
+  	<meta http-equiv="cache-control" content="no-cache">
+  	<meta http-equiv="expires" content="0">
+  	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+  	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+  	<meta http-equiv="description" content="This is my page">
+  	<link rel="stylesheet" href="marx.css">
+  	<link rel="stylesheet" href="main.css">
+  	<!-- <script src="${rc}/js/jquery-1.8.0.js"></script>  -->
+  	<!-- <script src="${rc}/js/jquery-1.8.0.min.js"></script> -->
+	<script src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js"></script>
+</head>
+<body>
+	<div class="main">
+		<header>
+			<h1>朗鹰自然语言处理工具(GrammerCheck)</h1>
+		</header>
+		<!-- Set Example Sentences -->
+		<div class="main-content">
+			<!-- 规则说明 -->
+			<div class="item-box">
+				<h3>LanguageTool Rule Editor</h3>
+				<div class="item-content">
+					<p>LanguageTool finds errors based on rules. Each rule has a pattern that describes an error. A simple pattern can just be a sequence of words, e.g. "bed" followed by "English", which is an error as it should probably be "bad English" instead. The text that is checked by LanguageTool is searched for this pattern, and if it is found, the text at that place is considered to have an error.</p>
+					<p>This page will help you to create new rules. As a result, you will have your rule in XML format, which you can send to the developers for inclusion in LanguageTool. Need help? Ask in our forum.</p>
+					<p>Hide the help texts, I know what I'm doing</p>
+				</div>
+			</div>
+			<!-- 设置例句 --> 
+			<div class="item-box">
+				<h3>Set Example Sentences</h3>
+				<div class="item-content example-sentences">
+					<div class="sentence-box">
+						<p>
+							<label class="item-line"><span>wrong sentence:</span><input class="text-input" type="text" data-exampletype="w" placeholder="Sorry for my bed English"></label>
+							<span><a class="add-item show-analysis">Show analysis</a></span>
+						</p>
+						<div class="analysis-box"></div>
+						<p>
+							<label class="item-line"><span>correct sentence:</span><input class="text-input" type="text" data-exampletype="c" placeholder="Sorry for my bad English"></label>
+							<span><a class="add-item show-analysis">Show analysis</a></span>
+						</p>
+						<div class="analysis-box"></div>
+					</div>
+					<p class="description-line padding-left">     
+						<a class="add-item add-wrong">Add another wrong example</a>
+						<a class="add-item add-corrent">Add anohter corrent example</a>
+					</p>
+					
+					<!-- end of 待添加 -->
+					<button class="btn disabled">create initial error pattern</button>
+				</div>
+			</div>
+			
+			<!-- 设置错误模式 -->
+			<div class="item-box is-show error-pattern">
+				<h3>Set the Error Pattern</h3>
+				<div>
+					<p>Use this to specify the error pattern, i.e. the sequence of words that - if found in a text that is checked by LanguageTool - triggers an error message. Add a token to the pattern to add a word so your pattern gets longer and thus more specific.</p>
+					<p><strong>Note: </strong>LanguageTool can already detect the following error(s) in your first wrong example sentence:</p>
+					<p>> This sentence does not start with an uppercase letter</p>
+				    <p><strong>sorry</strong> for my <strong>bed</strong> english sorry for my bed english</p>
+				    <p>> Did you mean bad?</p>
+				    <p>sorry for my bed english sorry for my <strong>bed</strong> english</p>
+				</div>
+				<div class="item-content">
+					<p><label><input id="isCaseSensitive" type="checkbox">&nbsp;&nbsp;Case-sensitive word matching</label></p>
+					<ul class="sort-table" id="sort-box">
+						<li class="sort-list">
+							<p><span class="drag-icon">&#8597;&nbsp;Token #1</span><a class="delete">&#10006;</a></p>
+							<p>
+								<label><input type="radio" data-select="W" name="token-0" checked>Word</label>
+								<label><input type="radio" data-select="P" name="token-0">Part-of-speech</label>
+								<label><input type="radio" data-select="WP" name="token-0">Word + Part-of-speech</label>
+								<label><input type="radio" data-select="All" name="token-0">Any word</label>
+							</p>
+							<!-- 动态被替换的文本 -->
+							<div class="word-box">
+								<p>
+									<label class="item-line">Word:&nbsp;&nbsp;<input type="text" placeholder="word"></label>
+									<label><input type="checkbox" value="wordRegExp">RgeExp</label>
+									<label><input type="checkbox" value="wordBaseForm">Base form</label>
+									<label><input type="checkbox" value="wordNegate">Negate</label>
+								</p>
+							</div>
+
+							<!-- 子选择项目 -->
+							<ul class="sort-table">
+							</ul>
+							<p>
+								<a class="add-item add-exception">Add exception</a>
+								<a class="add-item show-box" data-advancedarr> Edit Advanced Attributes (<span>0</span>)</a>
+							</p>
+						</li>
+					</ul>
+					<p>
+						<a class="add-item add-token-pattern">Add token to pattern</a>
+						<a class="add-item add-error-pattern">Add error marker to pattern</a>
+					</p>
+				</div>
+				<!-- advanced 弹出框 -->
+				<div class="advanced-box">
+					<div class="mask-box"></div>
+					<div class="advanced-container">
+						<h3>Advanced Attributes<span class="close-box">&#10006;</span></h3>
+						<ul class="sort-table">
+							<li class="sort-list">
+								<select>
+									<option value="min">min</option>
+									<option value="max">max</option>
+									<option value="skip">skip</option>
+									<option value="chunk">chunk</option>
+									<option value="spacebefore">spacebefore</option>
+								</select>
+								<span>&nbsp;=&nbsp;</span>
+								<input type="text" required>
+								<a class="delete">&#10006;</a>
+							</li>
+						</ul>
+						<p><a class="add-attribute">Add another Attribute</a></p>
+						<button class="advanced-confirm">ok</button>
+					</div> <!-- end of div.advanced-container -->
+				</div>	
+			</div>
+
+			<!-- 设置规则详情 -->
+			<div class="item-box is-show">
+				<h3>Set the Rule Details</h3>
+				<div class="item-content">
+					<p>
+						<label class="item-line"><span>Rule Name:</span><input class="rule-name" type="text" placeholder="Short rule description used for configuration"></label>
+					</p>
+					<p>
+						<label class="item-line"><span>Message:</span><textarea class="message" name="" id="" rows="2" placeholder="Error message shown to the user if error pattern matches"></textarea></label>
+					</p>
+					<p><label class="item-line"><span>ruleType</span><input type="select"></label></p>
+					<p class="padding-left">Use \1, \2 to refer to the first, second token etc. of the matched text.Use 'single quotes' to mark words that will be shown as suggestions to the user.
+					</p>
+					<p>
+						<label class="item-line"><span>Short message:</span><input class="short-message" type="text" placeholder="A short error message shown in e.g. context menus"></label>
+					</p>
+					<p>
+						<label class="item-line"><span>URL:</span><input class="url" type="text" placeholder="URL with more information about the error"></label>
+					</p>
+					<button class="btn confirm-btn">Evaluate error pattern</button>
+				</div>
+			</div>
+			<div class="item-box resulte-xml"><textarea></textarea></div>
+		</div> <!-- end of div.main-content -->
+	</div> <!-- end of div.main -->
+	<script src="Sortable.min.js"></script>
+	<script src="doT.min.js"></script>
+	<script src="main.js"></script>
+	<script id="tmp-1" type="text/template">
+		<div class="sentenceAnalysis">
+			<p>
+				Use this analysis to see what part-of-speech tags get assigned to the words of your sentence.<br>
+				You might want to use these part-of-speech tags in your error pattern in the next step.
+			</p>
+			<div id="wrongSentenceEvaluation">
+		        {{~it :v:i }}
+			    <table>
+				    <tbody>
+						{{~v :itemList:j }}
+	            		<tr>
+							{{~itemList :dataList:k}}
+							<td>{{= dataList}}</td>
+							{{~}}
+	            		</tr>
+						{{~}}
+				    </tbody>
+			    </table>
+		        {{~}}
+			</div>
+		</div>
+	</script>
+</body>
+</html>
