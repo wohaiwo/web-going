@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -7,6 +8,7 @@
   	<meta http-equiv="cache-control" content="no-cache">
   	<meta http-equiv="expires" content="0">
   	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+  	<meta http-equiv="Access-Control-Allow-Origin" content="*">
   	<meta http-equiv="description" content="This is my page">
   	<link rel="stylesheet" href="marx.css">
   	<link rel="stylesheet" href="main.css">
@@ -70,32 +72,6 @@
 				<div class="item-content">
 					<p><label><input id="isCaseSensitive" type="checkbox">&nbsp;&nbsp;Case-sensitive word matching</label></p>
 					<ul class="sort-table" id="sort-box">
-						<li class="sort-list">
-							<p><span class="drag-icon">&#8597;&nbsp;Token #1</span><a class="delete">&#10006;</a></p>
-							<p>
-								<label><input type="radio" data-select="W" name="token-0" checked>Word</label>
-								<label><input type="radio" data-select="P" name="token-0">Part-of-speech</label>
-								<label><input type="radio" data-select="WP" name="token-0">Word + Part-of-speech</label>
-								<label><input type="radio" data-select="All" name="token-0">Any word</label>
-							</p>
-							<!-- 动态被替换的文本 -->
-							<div class="word-box">
-								<p>
-									<label class="item-line">Word:&nbsp;&nbsp;<input type="text" placeholder="word"></label>
-									<label><input type="checkbox" value="wordRegExp">RgeExp</label>
-									<label><input type="checkbox" value="wordBaseForm">Base form</label>
-									<label><input type="checkbox" value="wordNegate">Negate</label>
-								</p>
-							</div>
-
-							<!-- 子选择项目 -->
-							<ul class="sort-table">
-							</ul>
-							<p>
-								<a class="add-item add-exception">Add exception</a>
-								<a class="add-item show-box" data-advancedarr> Edit Advanced Attributes (<span>0</span>)</a>
-							</p>
-						</li>
 					</ul>
 					<p>
 						<a class="add-item add-token-pattern">Add token to pattern</a>
@@ -124,7 +100,7 @@
 						<p><a class="add-attribute">Add another Attribute</a></p>
 						<button class="advanced-confirm">ok</button>
 					</div> <!-- end of div.advanced-container -->
-				</div>
+				</div>	
 			</div>
 
 			<!-- 设置规则详情 -->
@@ -137,6 +113,10 @@
 					<p>
 						<label class="item-line"><span>Message:</span><textarea class="message" name="" id="" rows="2" placeholder="Error message shown to the user if error pattern matches"></textarea></label>
 					</p>
+					<p><label class="item-line"><span>ruleType</span>
+						<select class="big-class">
+						</select>
+					</p>
 					<p class="padding-left">Use \1, \2 to refer to the first, second token etc. of the matched text.Use 'single quotes' to mark words that will be shown as suggestions to the user.
 					</p>
 					<p>
@@ -148,7 +128,7 @@
 					<button class="btn confirm-btn">Evaluate error pattern</button>
 				</div>
 			</div>
-			<div class="item-box resulte-xml"></div>
+			<div class="item-box resulte-xml"><textarea></textarea></div>
 		</div> <!-- end of div.main-content -->
 	</div> <!-- end of div.main -->
 	<script src="Sortable.min.js"></script>

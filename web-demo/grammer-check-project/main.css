@@ -46,7 +46,8 @@ textarea {
 	padding: 10px 20px;
 	margin-bottom: 30px;
 	box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, .5);
-	transition: opacity .8s ease-in, margin-left 1s ease-out;
+	-webkit-transition: display .8s ease-in, margin-left 1s ease-out;
+	transition: display .8s ease-in, margin-left 1s ease-out;
 }
 .item-box h3 {
 	margin: 0;
@@ -56,6 +57,18 @@ textarea {
 .item-box .item-content {
 	padding-left: 20px;
 }
+.resulte-xml {
+	display: none;
+	-webkit-transition: display .5s ease-in;
+	transition: display .5s ease-in;
+}
+.resulte-xml > textarea {
+	width: 100%;
+	min-height: 300px;
+	background: #eee;
+	resize: vertical;
+}
+
 /* 基本行内标签边距 */
 p {
 	padding: 0px 5px 10px;
@@ -66,7 +79,7 @@ p {
 }
 button.btn {
 	padding: 4px;
-	margin-left: 155px;
+	margin: 10px 0 0 155px;
 }
 /* 删除按钮基本样式 */
 a.delete {
@@ -102,10 +115,12 @@ input[data-exampletype="c"] {
 }
 .description-line {
 	margin-left: -2000px;
+	-webkit-transition: margin-left .8s ease-out;
 	transition: margin-left .8s ease-out;
 }
 .show-analysis {
 	visibility: hidden;
+	-webkit-transition: visibility .5s ease-out;
 	transition: visibility .5s ease-out;
 }
 .sentenceAnalysis {
@@ -115,7 +130,10 @@ input[data-exampletype="c"] {
 	border: 1px solid #ddd;
 }
 #wrongSentenceEvaluation table {
+	display: block;
 	border: none;
+	max-width: 750px;
+	overflow: auto;
 	background: #eee;
 	margin-bottom: 10px;
 }
@@ -149,7 +167,7 @@ li ul > li {
 
 /* 模块是否显示 */
 .is-show {
-	opacity: 0;
+	display: none;
 	margin-left: -300px;
 }
 
@@ -187,7 +205,14 @@ input.margin-left{
 .item-content .wrong-sentence, .item-content .correct-sentence {
 	background: #fff;
 }
-
+/* Set the Rule Details */
+.item-line > select {
+	width: 180px;
+}
+/* 大类select-box 的右边距	 */
+.big-class {
+	margin-right: 10px;
+}
 /* advanced-box 弹出框基本样式 */
 .advanced-box {
 	display: none;
@@ -209,7 +234,8 @@ input.margin-left{
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	transform: translate3d(-50%, -50%, 0);
+	-webkit-transform: translate3d(-50%, -50%, 0);
+	        transform: translate3d(-50%, -50%, 0);
 	width: 500px;
 	padding: 10px;
 	background-color: #fff;
