@@ -1,5 +1,4 @@
 <!DOCTYPE HTML>
-
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -12,10 +11,22 @@
   	<meta http-equiv="description" content="This is my page">
   	<link rel="stylesheet" href="marx.css">
   	<link rel="stylesheet" href="main.css">
+  	<style>
+		.fade-transition {
+			transition: opacity 0.5s ease-in;
+			color: #58a;
+			font-size: 24px;
+		}
+		.fade-enter, .fade-leave {
+			opacity: 0;
+			font-size: 48px;
+			background: red;
+		}
+  	</style>
 </head>
 <body>
 	<div class="main">
-		<header>
+		<header>	
 			<h1>朗鹰自然语言处理工具(GrammerCheck)</h1>
 		</header>
 		<!-- Set Example Sentences -->
@@ -39,9 +50,9 @@
 							<label class="item-line">
 							<span v-if="item.exampleType === 'w'">wrong sentence:</span>
 							<span v-if="item.exampleType === 'c'">corrent sentence:</span>
-							<input class="text-input" type="text" v-model="item.exampleSentence"  placeholder="Sorry for my bed English" v-on:change="showAnalysis(index, $event)"></label>
+							<input class="text-input" type="text" v-model="item.exampleSentence"  placeholder="Sorry for my bed English" @change="showAnalysis(index, $event)"></label>
 							<span>
-								<a class="delete" v-if="item.isDeleteBox" v-on:click="removeItem(index)">&#10006;</a>
+								<a class="delete" v-if="item.isDeleteBox" @click="removeItem(index)">&#10006;</a>
 								<a class="add-item" v-bind:class="{'show-analysis': item.isShowAnalysis}">Show analysis</a>
 							</span>
 						</p>
@@ -49,12 +60,11 @@
 					</div>
 
 					<p class="description-line padding-left" v-bind:class="{'show-tip': isShowRuleExample.isShowDescriptionLine}">     
-						<a class="add-item add-wrong" v-on:click="addOtherExample('w')">Add another wrong example</a>
-						<a class="add-item add-corrent" v-on:click="addOtherExample('c')">Add anohter corrent example</a>
+						<a class="add-item add-wrong" @click="addOtherExample('w')">Add another wrong example</a>
+						<a class="add-item add-corrent" @click="addOtherExample('c')">Add anohter corrent example</a>
 					</p>
-					
 					<!-- end of 待添加 -->
-					<button class="btn" v-bind:class="{'disabled': isShowRuleExample.isShowExampleButton}" v-on:click="showErrorPattern">create initial error pattern</button>
+					<button class="btn" v-bind:class="{'disabled': isShowRuleExample.isShowExampleButton}" @click="showErrorPattern">create initial error pattern</button>
 				</div>
 			</div>
 			
@@ -72,35 +82,160 @@
 				<div class="item-content">
 					<p><label><input id="isCaseSensitive" type="checkbox" v-model="caseSensitive">&nbsp;&nbsp;Case-sensitive word matching</label></p>
 					<ul class="sort-table" id="sort-box">
+						<li class="sort-list" v-for="(item, index) in ruleTokenList">
+							<p><span class="drag-icon">&#8597;&nbsp;Token #{{index + 1}}</span><a class="delete" @click="removeTokenItem(index)">&#10006;</a></p>
+							<p @click="changeWordBox($event, item)">
+								<label><input type="radio" v-bind:name="'token-' + index"  value="W" checked>Word</label>
+								<label><input type="radio" v-bind:name="'token-' + index" value="PP">Part-of-speech</label>
+								<label><input type="radio" v-bind:name="'token-' + index" value="WP">Word + Part-of-speech</label>
+								<label><input type="radio" v-bind:name="'token-' + index" value="All">Any word</label>
+							</p>
+
+							<template v-if="item.wordBoxType === '0'">
+							<div class="word-box">
+								<p>
+									<label class="item-line">Word:&nbsp;&nbsp;<input type="text" placeholder="word"></label>
+									<label><input type="checkbox" value="wordRegExp">RgeExp</label>
+									<label><input type="checkbox" value="wordBaseForm">Base form</label>
+									<label><input type="checkbox" value="wordNegate">Negate</label>
+							    </p>
+						    </div>
+							</template>
+							<template v-else-if="item.wordBoxType === '1'">
+							<div class="word-box">
+								<p>
+									<label class="item-line">Part-of-speech:&nbsp;&nbsp;<input type="text" placeholder="part-of-speech tag"></label>
+									<label><input type="checkbox" value="posRegExp">RegExp</label>
+									<label><input type="checkbox" value="posNegate">Negate</label>
+							    </p>
+						    </div>
+							</template>
+							<template v-else-if="item.wordBoxType === '2'">
+							<div class="word-box">
+								<p>
+									<label class="item-line">Word:&nbsp;&nbsp;<input class="margin-left" type="text" placeholder="word"></label>
+									<label><input type="checkbox" value="wordRegExp">RgeExp</label>
+									<label><input type="checkbox" value="wordBaseForm">Base form</label>
+									<label><input type="checkbox" value="wordNegate">Negate</label>
+							    </p>
+							    <p>
+									<label class="item-line">Part-of-speech:&nbsp;&nbsp;<input type="text" placeholder="part-of-speech tag"></label>
+									<label><input type="checkbox" value="posRegExp">RegExp</label>
+									<label><input type="checkbox" value="posNegate">Negate</label>
+							    </p>
+							</div>
+							</template>
+							<template v-else="item.wordBoxType ==== '3'">
+							<div class="word-box"></div>
+							</template>
+							<!-- 子选择项目 -->
+							<ul class="sort-table">
+								<li class="sort-list" v-for="(i, j) in item.exceptList">
+									<p><a class="delete" @click="removeSubTokenItem(index, j)">&#10006;</a></p>
+									<p @click="changeWordBox($event, i)">except:&nbsp;&nbsp;
+										<label><input type="radio" value="W" v-bind:name="'subToken-' + j" checked>Word</label>
+										<label><input type="radio" value="PP" v-bind:name="'subToken-' + j">Part-of-speech</label>
+										<label><input type="radio" value="WP" v-bind:name="'subToken-' + j">Word + Part-of-speech</label>
+									</p>
+									<template v-if="i.wordBoxType === '0'">
+									<div class="word-box">
+										<p>
+											<label class="item-line">Word:&nbsp;&nbsp;<input type="text" placeholder="word"></label>
+											<label><input type="checkbox" value="wordRegExp">RgeExp</label>
+											<label><input type="checkbox" value="wordBaseForm">Base form</label>
+											<label><input type="checkbox" value="wordNegate">Negate</label>
+									    </p>
+								    </div>
+									</template>
+									<template v-else-if="i.wordBoxType === '1'">
+									<div class="word-box">
+										<p>
+											<label class="item-line">Part-of-speech:&nbsp;&nbsp;<input type="text" placeholder="part-of-speech tag"></label>
+											<label><input type="checkbox" value="posRegExp">RegExp</label>
+											<label><input type="checkbox" value="posNegate">Negate</label>
+									    </p>
+								    </div>
+									</template>
+									<template v-else="i.wordBoxType === '2'">
+									<div class="word-box">
+										<p>
+											<label class="item-line">Word:&nbsp;&nbsp;<input class="margin-left" type="text" placeholder="word"></label>
+											<label><input type="checkbox" value="wordRegExp">RgeExp</label>
+											<label><input type="checkbox" value="wordBaseForm">Base form</label>
+											<label><input type="checkbox" value="wordNegate">Negate</label>
+									    </p>
+									    <p>
+											<label class="item-line">Part-of-speech:&nbsp;&nbsp;<input type="text" placeholder="part-of-speech tag"></label>
+											<label><input type="checkbox" value="posRegExp">RegExp</label>
+											<label><input type="checkbox" value="posNegate">Negate</label>
+									    </p>
+									</div>
+									</template>
+
+									<template v-if="i.isAddAdvancedBox">
+									<!-- advanced 弹出框 -->
+									<div class="advanced-box">
+										<div class="mask-box"></div>
+										<div class="advanced-container">
+											<h3>Advanced Attributes<span class="close-box" @click="closeAdvancedBox(i)">&#10006;</span></h3>
+											<ul class="sort-table">
+												<li class="sort-list" v-for="(subSelectItem, selectNum) in i.advancedArr">
+													<select v-model="subSelectItem.selected">
+														<option value="min">min</option>
+														<option value="max">max</option>
+														<option value="skip">skip</option>
+														<option value="chunk">chunk</option>
+														<option value="spacebefore">spacebefore</option>
+													</select>
+													<span>&nbsp;=&nbsp;</span>
+													<input type="text" required v-model="subSelectItem.inputText">
+													<a class="delete" @click="removeOptionItem(i, selectNum)">&#10006;</a>
+												</li>
+											</ul>
+											<p><a class="add-attribute" @click="addOptionItem(i)">Add another Attribute</a></p>
+											<button class="advanced-confirm" @click="advancedConfirm(i)">ok</button>
+										</div> <!--  end of div.advanced-container -->
+									</div> 
+									</template>
+									<p><a class="add-item show-box" @click="showAdvancedBox(i)"> Edit Advanced Attributes (<span>{{i.advancedArr.length}}</span>)</a></p>
+								</li>
+							</ul>
+							<template v-if="item.isAddAdvancedBox">
+							<!-- advanced 弹出框 -->
+							<div class="advanced-box">
+								<div class="mask-box"></div>
+								<div class="advanced-container">
+									<h3>Advanced Attributes<span class="close-box" @click="closeAdvancedBox(item)">&#10006;</span></h3>
+									<ul class="sort-table">
+										<li v-for="(subSelectItem, selectNum) in item.advancedArr" class="sort-list">
+											<select v-model="subSelectItem.selected">
+												<option value="min">min</option>
+												<option value="max">max</option>
+												<option value="skip">skip</option>
+												<option value="chunk">chunk</option>
+												<option value="spacebefore">spacebefore</option>
+											</select>
+											<span>&nbsp;=&nbsp;</span>
+											<input type="text" required v-model="subSelectItem.inputText">
+											<a class="delete" @click="removeOptionItem(item, selectNum)">&#10006;</a>
+										</li>
+									</ul>
+									<p><a class="add-attribute" @click="addOptionItem(item)">Add another Attribute</a></p>
+									<button class="advanced-confirm" @click="advancedConfirm(item)">ok</button>
+								</div> <!-- end of div.advanced-container -->
+							</div> 
+							</template>
+							<p>
+								<a class="add-item add-exception" @click="addSubToken(index)">Add exception</a>
+								<a class="add-item show-box" @click="showAdvancedBox(item)"> Edit Advanced Attributes (<span>{{item.advancedArr.length}}</span>)</a>
+							</p>
+						</li>
 					</ul>
 					<p>
-						<a class="add-item add-token-pattern">Add token to pattern</a>
-						<a class="add-item add-error-pattern">Add error marker to pattern</a>
+						<a class="add-item add-token-pattern" @click="addTokenPattern()">Add token to pattern</a>
+						<a class="add-item add-error-pattern" @click="addErrorPattern()">Add error marker to pattern</a>
 					</p>
 				</div>
-				<!-- advanced 弹出框 -->
-				<div class="advanced-box">
-					<div class="mask-box"></div>
-					<div class="advanced-container">
-						<h3>Advanced Attributes<span class="close-box">&#10006;</span></h3>
-						<ul class="sort-table">
-							<li class="sort-list">
-								<select>
-									<option value="min">min</option>
-									<option value="max">max</option>
-									<option value="skip">skip</option>
-									<option value="chunk">chunk</option>
-									<option value="spacebefore">spacebefore</option>
-								</select>
-								<span>&nbsp;=&nbsp;</span>
-								<input type="text" required>
-								<a class="delete">&#10006;</a>
-							</li>
-						</ul>
-						<p><a class="add-attribute">Add another Attribute</a></p>
-						<button class="advanced-confirm">ok</button>
-					</div> <!-- end of div.advanced-container -->
-				</div>	
 			</div>
 
 			<!-- 设置规则详情 -->
@@ -108,28 +243,30 @@
 				<h3>Set the Rule Details</h3>
 				<div class="item-content">
 					<p>
-						<label class="item-line"><span>Rule Name:</span><input class="rule-name" type="text" placeholder="Short rule description used for configuration"></label>
+						<label class="item-line"><span>Rule Name:</span><input class="rule-name" type="text" placeholder="Short rule description used for configuration" v-model="ruleName"></label>
 					</p>
 					<p>
-						<label class="item-line"><span>Message:</span><textarea class="message" name="" id="" rows="2" placeholder="Error message shown to the user if error pattern matches"></textarea></label>
+						<label class="item-line"><span>Message:</span><textarea class="message" name="" id="" rows="2" placeholder="Error message shown to the user if error pattern matches">{{ message }}</textarea></label>
 					</p>
-					<p><label class="item-line"><span>ruleType</span>
-						<select class="big-class">
-							<option value="min">min</option>
-							<option value="max">max</option>
-						</select>
-						<select class="small-class">
-							<option value="min">min</option>
-							<option value="max">max</option>
-						</select>
+					<p>
+						<label class="item-line"><span>ruleType</span>
+							<select class="big-class">
+								<option value="min">min</option>
+								<option value="max">max</option>
+							</select>
+							<select class="small-class">
+								<option value="min">min</option>
+								<option value="max">max</option>
+							</select>
+						</label>
 					</p>
 					<p class="padding-left">Use \1, \2 to refer to the first, second token etc. of the matched text.Use 'single quotes' to mark words that will be shown as suggestions to the user.
 					</p>
 					<p>
-						<label class="item-line"><span>Short message:</span><input class="short-message" type="text" placeholder="A short error message shown in e.g. context menus"></label>
+						<label class="item-line"><span>Short message:</span><input class="short-message" type="text" placeholder="A short error message shown in e.g. context menus" v-model="shortMessage"></label>
 					</p>
 					<p>
-						<label class="item-line"><span>URL:</span><input class="url" type="text" placeholder="URL with more information about the error"></label>
+						<label class="item-line"><span>URL:</span><input class="url" type="text" placeholder="URL with more information about the error" v-model="url"></label>
 					</p>
 					<button class="btn confirm-btn">Evaluate error pattern</button>
 				</div>
@@ -141,72 +278,16 @@
 	<script src="Sortable.min.js"></script>
 	<script src="doT.min.js"></script>
 	<script src="vue2.0.js"></script>
-	<!-- <script src="main.js"></script> -->
+	<script src="main-vue.js"></script>
 	<script>
-		var demo = new Vue({
-			el: '.main',
-			data: {
-				isShow: true,
-				isShowRuleExample: {
-					isShowExampleButton: true,
-					isShowDescriptionLine: false,
-					k: 0				// 计数器，当k为2时 显示 DescriptionLine标签
-				},
-				ruleExampleList: [
-					{exampleSentence: '', exampleType: 'w', isShowAnalysis: true},
-					{exampleSentence: '', exampleType: 'c', isShowAnalysis: true},
-				],
-				caseSensitive: true				// 是否大小写
-			},
-			methods: {
-				// 根据用户输入情况来显示标签
-				showAnalysis: function(index, e) {
-						// 如果有删除按钮，则不显示show-analysis标签
-						if(this.ruleExampleList[index].isDeleteBox) {
-							return false;
-						}
-						// 判断用户是否显示show-analysis标签 
-						if(e.target.value.length >= 1) {
-							// 防止用户重复更改input的值
-							if(this.ruleExampleList[index].isShowAnalysis) {
-								this.ruleExampleList[index].isShowAnalysis = false;
-								this.isShowRuleExample.k++;
-							}
-						} else {
-							this.ruleExampleList[index].isShowAnalysis = true;
-							this.isShowRuleExample.k--;
-						}
-						// 当用户两个input全部填写时，显示添加&&确认下一步按钮
-						if(this.isShowRuleExample.k == 2) {
-							this.isShowRuleExample.isShowExampleButton = false;
-							this.isShowRuleExample.isShowDescriptionLine = true;
-						} else {
-							this.isShowRuleExample.isShowExampleButton = true;
-							this.isShowRuleExample.isShowDescriptionLine = false;
-						}
-				},
-				addOtherExample: function(item) {
-					if(item === 'w') {
-						this.ruleExampleList.push({exampleSentence: '', exampleType: 'w', isDeleteBox: true, isShowAnalysis: true});
-					} else {
-						this.ruleExampleList.push({exampleSentence: '', exampleType: 'c', isDeleteBox: true, isShowAnalysis: true});
-					}
-				},
-				// 当点击create initial	error pattern按钮，显示隐藏的item-box并且调用ajax接口
-				showErrorPattern: function() {
-					this.isShow = false;
-				},
-				// 删除item-box按钮
-				removeItem: function(index) {
-					this.ruleExampleList.splice(index, 1);
-					console.log('输出listArr' + this.ruleExampleList);
-				}
-			}
+		// var sortBox = document.getElementById('sort-box');
 
-		})
+		// // 拖拽事件 调用Sorttable.js框件
+		// Sortable.create(sortBox, {
+		//   animation: 150
+		// });
+
 	</script>
-
-
 
 	<script id="tmp-1" type="text/template">
 		<div class="sentenceAnalysis">
