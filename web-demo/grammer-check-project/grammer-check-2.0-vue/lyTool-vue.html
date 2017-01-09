@@ -177,7 +177,7 @@
 									<div class="advanced-box">
 										<div class="mask-box"></div>
 										<div class="advanced-container">
-											<h3>Advanced Attributes<span class="close-box" @click="closeAdvancedBox(i)">&#10006;</span></h3>
+											<h3>Advanced Attributes<span class="close-box" @click.self="closeAdvancedBox(i)">&#10006;</span></h3>
 											<ul class="sort-table">
 												<li class="sort-list" v-for="(subSelectItem, selectNum) in i.advancedArr">
 													<select v-model="subSelectItem.selected">
@@ -197,7 +197,7 @@
 										</div> <!--  end of div.advanced-container -->
 									</div> 
 									</template>
-									<p><a class="add-item show-box" @click="showAdvancedBox(i)"> Edit Advanced Attributes (<span>{{i.advancedArr.length}}</span>)</a></p>
+									<p><a class="add-item show-box" @click.self="showAdvancedBox(i)"> Edit Advanced Attributes (<span>{{i.advancedArr.length}}</span>)</a></p>
 								</li>
 							</ul>
 							<template v-if="item.isAddAdvancedBox">
@@ -205,7 +205,7 @@
 							<div class="advanced-box">
 								<div class="mask-box"></div>
 								<div class="advanced-container">
-									<h3>Advanced Attributes<span class="close-box" @click="closeAdvancedBox(item)">&#10006;</span></h3>
+									<h3>Advanced Attributes<span class="close-box" @click.self="closeAdvancedBox(item)">&#10006;</span></h3>
 									<ul class="sort-table">
 										<li v-for="(subSelectItem, selectNum) in item.advancedArr" class="sort-list">
 											<select v-model="subSelectItem.selected">
@@ -227,13 +227,13 @@
 							</template>
 							<p>
 								<a class="add-item add-exception" @click="addSubToken(index)">Add exception</a>
-								<a class="add-item show-box" @click="showAdvancedBox(item)"> Edit Advanced Attributes (<span>{{item.advancedArr.length}}</span>)</a>
+								<a class="add-item show-box" @click.self.stop.prevent="showAdvancedBox(item)"> Edit Advanced Attributes (<span>{{item.advancedArr.length}}</span>)</a>
 							</p>
 						</li>
 					</ul>
 					<p>
-						<a class="add-item add-token-pattern" @click="addTokenPattern()">Add token to pattern</a>
-						<a class="add-item add-error-pattern" @click="addErrorPattern()">Add error marker to pattern</a>
+						<a class="add-item add-token-pattern" @click="addTokenPattern">Add token to pattern</a>
+						<a class="add-item add-error-pattern" @click="addErrorPattern">Add error marker to pattern</a>
 					</p>
 				</div>
 			</div>
@@ -280,11 +280,12 @@
 	<script src="vue2.0.js"></script>
 	<script src="main-vue.js"></script>
 	<script>
-		// var sortBox = document.getElementById('sort-box');
+		var sortBox = document.querySelector('#sort-box');
 
 		// // 拖拽事件 调用Sorttable.js框件
-		// Sortable.create(sortBox, {
-		//   animation: 150
+		// new Sortable.create(sortBox, {
+		//   animation: 150,
+		//   handle: ".sort-list"
 		// });
 
 	</script>

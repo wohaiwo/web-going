@@ -215,7 +215,7 @@ input.margin-left{
 }
 /* advanced-box 弹出框基本样式 */
 .advanced-box {
-	display: none;
+	display: block;
 }
 .advanced-box input[type='text'] {
 	width: 200px;
