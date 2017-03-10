@@ -43,3 +43,15 @@
 		  return fib(n-1, n * total);
         }
         fib(5, 1)  // => 120
+	
+- 优化3.1:
+		
+		// 优化代码，让其代码符合正常的递归调用格式
+		function fib(n, total) {
+		  if(n === 1) return total;
+          return fib(n-1, n * total);
+		}
+		function factorial(n) {
+		  return fib(n, 1);	
+		}
+		factorial(5);	// 120
