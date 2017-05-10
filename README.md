@@ -17,3 +17,7 @@
 #### [js变量提升](https://github.com/wohaiwo/web-going/issues/3)
 #### [js面试杂烩](https://github.com/wohaiwo/web-going/issues/8)
 #### [js输出一个整数n的分解类型](https://github.com/wohaiwo/web-going/issues/6)
+
+## 随笔杂谈
+#### [一个简单的抽奖系统](https://github.com/wohaiwo/web-going/issues/13)
+
