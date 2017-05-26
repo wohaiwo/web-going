@@ -5,7 +5,7 @@
 
 
 ## blog
-
+#### [移动端常见问题汇总](https://github.com/wohaiwo/web-going/issues/15)
 #### [FileReader对象初探](https://github.com/wohaiwo/web-going/issues/11)
 #### [如何实现一个本地图片拓拽预览效果](https://github.com/wohaiwo/web-going/issues/12)
 #### [js中连续的赋值引发的血案](https://github.com/wohaiwo/web-going/issues/5)
